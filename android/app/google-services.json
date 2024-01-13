@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "750785903787",
+    "project_id": "pj-jobhub",
+    "storage_bucket": "pj-jobhub.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:750785903787:android:835705144e745f40ffcbee",
+        "android_client_info": {
+          "package_name": "com.dbestech.jobhub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyDRlPSFHO55rBlhlBuvF53bQ4-0sbwIU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
