@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jobhub/controllers/bookmark_provider.dart';
 import 'package:jobhub/models/response/bookmarks/all_bookmarks.dart';
-import 'package:jobhub/views/common/page_loader.dart';
+import 'package:jobhub/services/helpers/book_helper.dart';
 import 'package:jobhub/views/common/style_container.dart';
 import 'package:jobhub/views/ui/bookmarks/widgets/bookmark_widget.dart';
 import 'package:jobhub/views/ui/jobs/widgets/uploaded_tile.dart';
 import 'package:provider/provider.dart';
-
 import '../../../constants/app_constants.dart';
 import '../../../controllers/login_provider.dart';
 import '../../common/app_bar.dart';
 import '../../common/app_style.dart';
 import '../../common/drawer/drawer_widget.dart';
+import '../../common/loader.dart';
 import '../../common/reusable_text.dart';
+import '../../common/shimmer.dart';
 import '../auth/non_user.dart';
 
 class BookMarkPage extends StatefulWidget {
@@ -24,24 +25,36 @@ class BookMarkPage extends StatefulWidget {
 }
 
 class _BookMarkPageState extends State<BookMarkPage> {
+
+  late Future<List<AllBookmarks>> bookmarks;
+
+  getBookmarks() {
+    bookmarks = BookMarkHelper.getAllBookMarks();
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    getBookmarks();
+  }
+
   @override
   Widget build(BuildContext context) {
     var loginNotifier = Provider.of<LoginNotifier>(context);
     return Scaffold(
-      backgroundColor: Color(kNewBlue.value),
+      backgroundColor: !loginNotifier.loggedIn ? Color(kLight.value) : const Color(0xFF3281E3),
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(50.h),
           child: CustomAppBar(
-            color: Color(kNewBlue.value),
+            color: !loginNotifier.loggedIn ? Color(kLight.value) : Color(kNewBlue.value),
             text: !loginNotifier.loggedIn ? '':'Bookmarks',
               child: Padding(
                 padding: EdgeInsets.all(12.h),
-                child: DrawerWidget(color: Color(kLight.value),),
+                child: DrawerWidget(color: !loginNotifier.loggedIn ? Color(kDark.value) : Color(kLight.value),),
               ))),
       body: loginNotifier.loggedIn == false ? const NonUser() :
           Consumer<BookMarkNotifier>(builder: (context, bookNotifier, child){
             bookNotifier.getAllBookmarks();
-            var bookmarks = bookNotifier.getAllBookmarks();
             return Stack(
               children: [
                 Positioned(
@@ -60,8 +73,14 @@ class _BookMarkPageState extends State<BookMarkPage> {
                           future: bookmarks,
                           builder: ((context, snapshot){
                             if(snapshot.connectionState == ConnectionState.waiting){
-                              return const PageLoader();
-                            } else if(snapshot.hasError){return Text('Error: ${snapshot.error}');}
+                              return const Center(child: Loader(text: 'Fetching bookmarks..'),);
+                            }
+                            else if(snapshot.hasError)
+                            {
+                              return Text('Error: ${snapshot.error}');}
+                            else if(snapshot.data!.isEmpty){
+                              return const Loader(text: 'No bookmarks found');
+                            }
                             else{
                               var storedBookMarks = snapshot.data;
                             return ListView.builder(

@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final allBookmarks = allBookmarksFromJson(jsonString);
+
 import 'dart:convert';
 
 List<AllBookmarks> allBookmarksFromJson(String str) => List<AllBookmarks>.from(json.decode(str).map((x) => AllBookmarks.fromJson(x)));
@@ -5,15 +9,15 @@ List<AllBookmarks> allBookmarksFromJson(String str) => List<AllBookmarks>.from(j
 String allBookmarksToJson(List<AllBookmarks> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class AllBookmarks {
+  final String id;
+  final Job job;
+  final String userId;
+
   AllBookmarks({
     required this.id,
     required this.job,
     required this.userId,
   });
-
-  final String id;
-  final Job job;
-  final String userId;
 
   factory AllBookmarks.fromJson(Map<String, dynamic> json) => AllBookmarks(
     id: json["_id"],
@@ -28,58 +32,66 @@ class AllBookmarks {
   };
 }
 
-class Job{
+class Job {
   final String id;
   final String title;
   final String location;
   final String company;
-  final bool hiring;
+  final String level;
+  final String agentName;
   final String salary;
   final String period;
   final String contract;
+  final bool hiring;
   final String imageUrl;
   final String agentId;
-  final String agentName;
+  final String agentPic;
 
   Job({
     required this.id,
     required this.title,
-    required this.company,
     required this.location,
-    required this.hiring,
+    required this.company,
+    required this.level,
+    required this.agentName,
     required this.salary,
     required this.period,
     required this.contract,
+    required this.hiring,
     required this.imageUrl,
     required this.agentId,
-    required this.agentName,
+    required this.agentPic,
   });
 
   factory Job.fromJson(Map<String, dynamic> json) => Job(
     id: json["_id"],
     title: json["title"],
     location: json["location"],
-    agentName: json["agentName"],
     company: json["company"],
-    hiring: json["hiring"],
+    level: json["level"],
+    agentName: json["agentName"],
     salary: json["salary"],
     period: json["period"],
     contract: json["contract"],
+    hiring: json["hiring"],
     imageUrl: json["imageUrl"],
     agentId: json["agentId"],
+    agentPic: json["agentPic"],
   );
 
   Map<String, dynamic> toJson() => {
     "_id": id,
     "title": title,
     "location": location,
-    "agentName": agentName,
     "company": company,
-    "hiring": hiring,
+    "level": level,
+    "agentName": agentName,
     "salary": salary,
     "period": period,
     "contract": contract,
+    "hiring": hiring,
     "imageUrl": imageUrl,
     "agentId": agentId,
+    "agentPic": agentPic,
   };
 }

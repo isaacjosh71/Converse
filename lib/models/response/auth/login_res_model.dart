@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final loginResponseModel = loginResponseModelFromJson(jsonString);
+
 import 'dart:convert';
 
 LoginResponseModel loginResponseModelFromJson(String str) => LoginResponseModel.fromJson(json.decode(str));
@@ -5,34 +9,45 @@ LoginResponseModel loginResponseModelFromJson(String str) => LoginResponseModel.
 String loginResponseModelToJson(LoginResponseModel data) => json.encode(data.toJson());
 
 class LoginResponseModel {
+    final String id;
+    final String username;
+    final String email;
+    final String uid;
+    // final bool updated;
+    final bool isAgent;
+    final String profile;
+    final String userToken;
+
     LoginResponseModel({
         required this.id,
+        required this.username,
+        required this.email,
+        required this.uid,
+        // required this.updated,
+        required this.isAgent,
+        required this.profile,
         required this.userToken,
-        this.userName, this.uid, this.profile, this.isAgent,
     });
-
-    final String id;
-    final String userToken;
-    final String? userName;
-    final String? uid;
-    final String? profile;
-    final bool? isAgent;
 
     factory LoginResponseModel.fromJson(Map<String, dynamic> json) => LoginResponseModel(
         id: json["_id"],
-        userToken: json["userToken"],
-        userName: json["userName"],
+        username: json["username"],
+        email: json["email"],
         uid: json["uid"],
-        profile: json["profile"],
+        // updated: json["updated"],
         isAgent: json["isAgent"],
+        profile: json["profile"],
+        userToken: json["userToken"],
     );
 
     Map<String, dynamic> toJson() => {
         "_id": id,
-        "userToken": userToken,
-        "isAgent": isAgent,
-        "userName": userName,
-        "profile": profile,
+        "username": username,
+        "email": email,
         "uid": uid,
+        // "updated": updated,
+        "isAgent": isAgent,
+        "profile": profile,
+        "userToken": userToken,
     };
 }

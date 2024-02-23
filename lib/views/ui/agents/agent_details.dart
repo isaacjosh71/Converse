@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:jobhub/constants/app_constants.dart';
 import 'package:jobhub/controllers/agent_provider.dart';
 import 'package:jobhub/models/response/agent/getAgent.dart';
@@ -9,6 +12,7 @@ import 'package:jobhub/views/common/exports.dart';
 import 'package:jobhub/views/common/style_container.dart';
 import 'package:jobhub/views/ui/agents/agent_jobs.dart';
 import 'package:jobhub/views/ui/auth/profile.dart';
+import 'package:jobhub/views/ui/chat/chatpage.dart';
 import 'package:provider/provider.dart';
 
 class AgentDetails extends StatelessWidget {
@@ -22,9 +26,13 @@ class AgentDetails extends StatelessWidget {
         backgroundColor: const Color(0xFF171717),
         elevation: 0,
         leading: Padding(padding: EdgeInsets.all(12.w),
-          child: BackBtn(color: Color(kLight.value),),
+          child: GestureDetector(
+            onTap: (){
+             Get.back();
+            },
+            child: Icon(AntDesign.leftcircleo, color: Color(kLight.value),),
+          ),
         ),
-        // title: ''
       ),
       body:  Stack(
         children: [
@@ -79,9 +87,9 @@ class AgentDetails extends StatelessWidget {
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            ReusableText(text: data!.company, style: appstyle(11.sp, Color(kLight.value), FontWeight.w500)),
-                                            ReusableText(text: data.hqAddress, style: appstyle(11.sp, Color(kLight.value), FontWeight.w500)),
-                                            ReusableText(text: data.workingHrs, style: appstyle(11.sp, Color(kLight.value), FontWeight.w500)),
+                                            ReusableText(text: data!.company, style: appstyle(12.sp, Color(kLight.value), FontWeight.w500)),
+                                            ReusableText(text: data.hqAddress, style: appstyle(12.sp, Color(kLight.value), FontWeight.w500)),
+                                            ReusableText(text: data.workingHrs, style: appstyle(12.sp, Color(kLight.value), FontWeight.w500)),
                                           ],
                                         );
                                       }
@@ -100,7 +108,7 @@ class AgentDetails extends StatelessWidget {
           Positioned(
               top: 80.h, left: 0.w, right: 0.w,
               child: Container(
-                height: height*0.8, width: width,
+                height: Dimensions.height*0.8, width: Dimensions.width,
                 decoration: BoxDecoration(
                     color: const Color(0xFFEFFFFC),
                     borderRadius: BorderRadius.only(
@@ -109,7 +117,7 @@ class AgentDetails extends StatelessWidget {
                     )
                 ),
                 child: buildStyleContainer(
-                  context,
+                    context,
                     const AgentJobs()),
               ))
         ],

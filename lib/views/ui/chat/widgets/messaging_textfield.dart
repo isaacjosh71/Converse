@@ -26,7 +26,7 @@ class MessagingField extends StatelessWidget {
         ),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 15.w),
-        width: width, height: 80.h,
+        width: Dimensions.width, height: 80.h,
         color: Colors.white,
         child: TextFormField(
           keyboardType: TextInputType.multiline,
@@ -34,25 +34,22 @@ class MessagingField extends StatelessWidget {
           minLines: 1,
           controller: _messageController,
           focusNode: _messageFocusNode,
-          onTap: onTap,
           style: appstyle(12.sp, Colors.black, FontWeight.normal),
           decoration: InputDecoration(
             suffixIcon: SizedBox(
-              width: 60.w,
+              width: 65.w,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: (){},
-                    child: Icon(EvilIcons.image, size: 30.w,),
+                    onTap: onTap,
+                    child: Icon(EvilIcons.paperclip, size: 28.w,color: Color(kNewBlue.value)),
                   ),
-                  Consumer<AgentNotifier>(builder: (context, agentNotifier, child){
-                    return GestureDetector(
-                      onTap: sendText,
-                      child: Icon(MaterialCommunityIcons.send, color: Color(kNewBlue.value),),
-                    );
-                  })
+                  GestureDetector(
+                    onTap: sendText,
+                    child: Icon(MaterialCommunityIcons.send, size: 27.sp, color: Color(kNewBlue.value),),
+                  )
                 ],
               ),
             ),

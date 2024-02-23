@@ -2,18 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:jobhub/controllers/exports.dart';
 import 'package:jobhub/models/request/auth/signup_model.dart';
-import 'package:jobhub/views/common/page_loader.dart';
+import 'package:jobhub/services/notification_services.dart';
 import 'package:jobhub/views/ui/auth/login.dart';
 import 'package:provider/provider.dart';
 import '../../../constants/app_constants.dart';
-import '../../../controllers/login_provider.dart';
-import '../../../controllers/zoom_provider.dart';
 import '../../common/app_bar.dart';
 import '../../common/app_style.dart';
-import '../../common/backBtn.dart';
 import '../../common/custom_btn.dart';
 import '../../common/custom_textfield.dart';
 import '../../common/reusable_text.dart';
@@ -32,6 +28,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
 
+
   @override
   void dispose() {
     name.dispose();
@@ -44,6 +41,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     return Consumer<SignUpNotifier>(builder: (context,signupNotifier,child){
       return Scaffold(
+        backgroundColor: Color(kLight.value),
         appBar: PreferredSize(preferredSize: Size.fromHeight(50.h),
             child: CustomAppBar(
               text: 'Sign Up',
@@ -53,8 +51,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 },
                 child: const Icon(AntDesign.leftcircleo),
               ),)),
-        body: signupNotifier.loader ?
-        const PageLoader() :
+        body:
+        // signupNotifier.loader ?
+        // const Center(child: Loader(text: ''),) :
         buildStyleContainer(context, Padding(padding: EdgeInsets.symmetric(
             horizontal: 20.w),
           child: Form(child: ListView(

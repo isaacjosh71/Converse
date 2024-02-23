@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:jobhub/controllers/zoom_provider.dart';
+import 'package:jobhub/views/ui/auth/profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_constants.dart';
+import '../services/helpers/agent_helper.dart';
 import '../services/helpers/auth_helper.dart';
+import '../services/notification_services.dart';
 import '../views/ui/home/mainscreen.dart';
 
 
@@ -46,16 +49,49 @@ class LoginNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  static final notifications = NotificationServices();
+
   logIn(String model, ZoomNotifier zoomNotifier){
     AuthHelper.login(model).then((response){
       if(response==true){
         loader=false;
         zoomNotifier.currentIndex = 0;
         Get.offAll(()=> const MainScreen());
+        notifications.requestPermission();
+        notifications.getToken();
       } else{
         loader=false;
         Get.snackbar('Failed to sign up', 'Please check credentials',
-            backgroundColor: Color(kDarkPurple.value),
+            backgroundColor: Color(kOrange.value),
+            colorText: Color(kLight.value), icon: const Icon(Icons.add_alert)
+        );
+      }
+    });
+  }
+
+  update(var model){
+    AuthHelper.updateProfile(model).then((response){
+      if(response==true){
+        print(response);
+        Get.offAll(()=> const MainScreen());
+      } else{
+        Get.snackbar('Failed to update', 'Please check credentials',
+            backgroundColor: Color(kOrange.value),
+            colorText: Color(kLight.value), icon: const Icon(Icons.add_alert)
+        );
+      }
+    });
+  }
+
+
+  agent(var model){
+    AgentHelper.beAnAgent(model).then((response){
+      if(response==true){
+        print(response);
+        Get.offAll(()=> const MainScreen());
+      } else{
+        Get.snackbar('Failed', 'Please try again',
+            backgroundColor: Color(kOrange.value),
             colorText: Color(kLight.value), icon: const Icon(Icons.add_alert)
         );
       }
@@ -64,11 +100,13 @@ class LoginNotifier extends ChangeNotifier {
 
   getPref() async{
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    entryPoint = prefs.getBool('entrypoint') ?? false;
+    entryPoint = prefs.getBool('entryPoint') ?? false;
     loggedIn = prefs.getBool('loggedIn') ?? false;
-    userName = prefs.getString('userName') ?? '';
-    userUid = prefs.getString('uid') ?? '';
-    //
+    // isAgent = prefs.getBool('agent') ?? false;
+    userName = prefs.getString('username') ?? '';
+    userUid = prefs.getString('userUid') ?? '';
+    profileImage = prefs.getString('profile') ?? '';
+    token = prefs.getString('token') ?? '';
   }
 
   logOut() async{

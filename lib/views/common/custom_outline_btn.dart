@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jobhub/views/common/exports.dart';
 
 class CustomOutlineBtn extends StatelessWidget {
@@ -27,7 +28,7 @@ class CustomOutlineBtn extends StatelessWidget {
         ),
         child: Center(
           child: ReusableText(text: text,
-          style: appstyle(14, color, FontWeight.w500),
+          style: appstyle(14.sp, color, FontWeight.normal),
           ),
         ),
       ),

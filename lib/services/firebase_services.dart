@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:jobhub/constants/app_constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FirebaseServices{
   CollectionReference typing = FirebaseFirestore.instance.collection('typing');
@@ -15,12 +16,16 @@ class FirebaseServices{
     });
 }
 
-  void addTypingStatus(String chatRoomId){
+  void addTypingStatus(String chatRoomId) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userUid = prefs.getString('userUid') ?? '';
     typing.doc(chatRoomId).collection('typing').doc(userUid).set({});
   }
 
 
-  void removeTypingStatus(String chatRoomId){
+  void removeTypingStatus(String chatRoomId) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userUid = prefs.getString('userUid') ?? '';
     typing.doc(chatRoomId).collection('typing').doc(userUid).delete();
   }
 
@@ -33,7 +38,7 @@ class FirebaseServices{
       'messageType':message['messageType'],
       'sender':message['sender'],
       'id':message['id'],
-      'profile':message['profile'],
+      // 'profile':message['profile'],
       'timestamp':Timestamp.now(),
       'lastChat':message['message'],
       'lastChatTime':message['time'],

@@ -23,7 +23,7 @@ class BookMarkHelper {
       if(response.statusCode == 200){
         var bookMark = addBookmarkFromJson(response.body);
         return bookMark;
-      } else { throw Exception('Failed to get bookmark');}
+      } else {throw Exception('Failed to add bookmark');}
   }
 
   //get all bookmarks
@@ -33,7 +33,7 @@ class BookMarkHelper {
 
     Map<String, String> requestHeaders = {
       'Content-Type':'application/json',
-      'authorization':'Bearer $token',
+      'authorization':'Bearer $token'
     };
     var url = Uri.https(Config.apiUrl, Config.bookmarkUrl);
     print(url);
@@ -59,7 +59,7 @@ class BookMarkHelper {
         'Content-Type':'application/json',
         'authorization':'Bearer $token',
       };
-      var url = Uri.https(Config.apiUrl, "${Config.singleBookmarkUrl}$jobId");
+      var url = Uri.https(Config.apiUrl, "${Config.singleBookmarkUrl}/$jobId");
       print(url);
 
       var response = await client.get(url, headers: requestHeaders);
@@ -81,11 +81,11 @@ class BookMarkHelper {
       'Content-Type':'application/json',
       'authorization':'Bearer $token',
     };
-    var url = Uri.https(Config.apiUrl, "${Config.singleBookmarkUrl}/$bookmarkId");
+    var url = Uri.https(Config.apiUrl, "${Config.bookmarkUrl}/$bookmarkId");
     print(url);
 
     var response = await client.delete(url, headers: requestHeaders);
-    if(response.statusCode ==200){
+    if(response.statusCode == 200){
       return true;
     } else{return false;}
   }

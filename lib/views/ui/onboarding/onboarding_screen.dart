@@ -48,7 +48,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               ),
               onBoardNotifier.isLastPage ? const SizedBox.shrink()
               : Positioned(
-                  bottom: height*0.12,
+                  bottom: Dimensions.height*0.12,
                   left: 0, right: 0,
                   child: Center(
                     child: SmoothPageIndicator(
@@ -75,7 +75,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       GestureDetector(
                         onTap: (){
                           pageController.nextPage(
-                              duration: const Duration(milliseconds: 300), curve: Curves.ease);
+                              duration: const Duration(milliseconds: 300), curve: Curves.easeInOutCubic);
                         },
                         child: ReusableText(text: 'Next',
                             style: appstyle(16, Color(kLight.value), FontWeight.normal)),

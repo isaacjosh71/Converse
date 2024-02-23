@@ -1,4 +1,7 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jobhub/controllers/agent_provider.dart';
@@ -11,8 +14,16 @@ import 'package:jobhub/views/ui/chat/widgets/chatleftitem.dart';
 import 'package:jobhub/views/ui/chat/widgets/chatrightitem.dart';
 import 'package:jobhub/views/ui/chat/widgets/messaging_textfield.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:uuid/uuid.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import '../../../models/response/auth/profile_model.dart';
+import '../../../services/helpers/auth_helper.dart';
+import '../../../services/notification_services.dart';
+import '../../../services/pdf_services.dart';
+import 'package:http/http.dart' as http;
+
 
 class ConversationPage extends StatefulWidget {
   const ConversationPage({super.key});
@@ -26,28 +37,56 @@ class _ConversationPageState extends State<ConversationPage> {
   TextEditingController messageController = TextEditingController();
   final FocusNode messageFocusNode = FocusNode();
   final itemController = ItemScrollController();
-  var uuid = Uuid();
+  var uuid = const Uuid();
+  late Future<ProfileRes> userProfile;
+  ProfileRes? profile;
+  final notificationServices = NotificationServices();
 
-  String imageUrl = 'https://d326fntlu7tb1e.cloudfront.net/uploads/b8bac89b-b85d-4ead-bb9e-57c96e03a08b-vinci_02.jpg';
-
-  sendMessage(){
+  sendMessage(String profileImg){
     var chat = Provider.of<AgentNotifier>(context, listen: false).chat;
 
     Map<String, dynamic> message = {
       'message' : messageController.text,
       'messageType':'text',
-      'profile':profile,
+      'profile':profileImg,
       'sender':userUid,
       'id':uuid.v4(),
       'time':Timestamp.now()
     };
+
     services.createChat(chat['chatRoomId'], message);
     messageController.clear();
     FocusScope.of(context).unfocus();
   }
 
   @override
+  void initState() {
+    super.initState();
+    getProf();
+    getPrefs();
+  }
+
+  getProf(){
+    // var chat = Provider.of<AgentNotifier>(context, listen: false).chat;
+    // String receiverId = chat['sender'] != userUid ? jobUpdate!.agentId : userUid;
+    userProfile = AuthHelper.getProfile();
+    notificationServices.getReceiverToken(userUid);
+  }
+
+  getPrefs() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userUid = prefs.getString('userUid') ?? '';
+  }
+
+  File? file;
+  PlatformFile? platformFile;
+
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  static var client = http.Client();
+
+  @override
   Widget build(BuildContext context) {
+    final viewInsets = MediaQuery.viewInsetsOf(context);
     String chatRoomId = Provider.of<AgentNotifier>(context, listen: false).chat['chatRoomId'];
 
     final Stream<QuerySnapshot> typingStatus = FirebaseFirestore.instance.
@@ -64,12 +103,12 @@ class _ConversationPageState extends State<ConversationPage> {
     .snapshots();
 
     return Scaffold(
-      backgroundColor: Color(kLight.value),
+      backgroundColor: Color(kDark.value),
       appBar: AppBar(
-        backgroundColor: Color(kLight.value),
+        backgroundColor: Color(kDark.value),
         elevation: 0,
         leading: Padding(padding: EdgeInsets.all(12.w),
-        child: const BackBtn(),
+        child: BackBtn(color: Color(kLight.value),),
         ),
         actions: [
           Padding(padding: EdgeInsets.only(right: 15.w),
@@ -77,7 +116,7 @@ class _ConversationPageState extends State<ConversationPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   StreamBuilder(stream: typingStatus,
@@ -92,27 +131,23 @@ class _ConversationPageState extends State<ConversationPage> {
                     List<String> documentIds = snapshot.data!.docs.map((doc) => doc.id).toList();
                     return ReusableText(text: documentIds.isNotEmpty && !documentIds.contains(userUid)
                         ? 'typing...' : '',
-                        style: appstyle(9.sp, Colors.black54, FontWeight.normal));
+                        style: appstyle(10.sp, Color(kLight.value), FontWeight.normal));
                       }),
-                  ReusableText(text: 'online', style: appstyle(9.sp, Colors.green.shade600, FontWeight.normal))
                 ],
               ),
-              Stack(
-                children: [
-                  CircularProfileAvatar(image: imageUrl, w: 30.w, h: 30.h),
-                  Positioned(child: CircleAvatar(backgroundColor: Colors.green.shade600, radius: 4.r,))
-                ],
-              )
             ],
           ),
           )
         ],
       ),
-      body: SafeArea(child: Stack(
-        children: [
-          Positioned(child: Container(
+      body: SafeArea(
+          child: Stack(
+          children: [
+          Positioned(
+              top: 0.h, right: 0.w, left: 0.w,
+              child: Container(
             padding: EdgeInsets.only(left: 5.w, top: 10.h, right:20.w),
-            width: width, height: 120.h,
+            width: Dimensions.width, height: 140.h,
             decoration: BoxDecoration(
               color: Color(kNewBlue.value),
               borderRadius: BorderRadius.only(
@@ -120,8 +155,8 @@ class _ConversationPageState extends State<ConversationPage> {
                 topRight: Radius.circular(20.r)
               )
             ),
-            child: Column(
-              children: [
+               child: Column(
+                children: [
                 Consumer<AgentNotifier>(builder: (context, agentNotifier, child){
                   var jobDetails = agentNotifier.chat['job'];
                   return Padding(
@@ -149,9 +184,9 @@ class _ConversationPageState extends State<ConversationPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ReusableText(text: jobDetails['company'], style: appstyle(11.sp, Color(kLight.value), FontWeight.w500)),
-                                ReusableText(text: jobDetails['title'], style: appstyle(11.sp, Color(kLight.value), FontWeight.w500)),
-                                ReusableText(text: jobDetails['salary'], style: appstyle(11.sp, Color(kLight.value), FontWeight.w500)),
+                                ReusableText(text: jobDetails['company'], style: appstyle(12.sp, Color(kLight.value), FontWeight.normal)),
+                                ReusableText(text: jobDetails['title'], style: appstyle(12.sp, Color(kLight.value), FontWeight.normal)),
+                                ReusableText(text: jobDetails['salary'], style: appstyle(12.sp, Color(kLight.value), FontWeight.normal)),
                               ],
                             )
                           ],
@@ -165,8 +200,10 @@ class _ConversationPageState extends State<ConversationPage> {
               ],
             ),
           )),
-          Positioned(child: Container(
-            width: width, height: height*0.75,
+          Positioned(
+              top: 90.h, right: 0.w, left: 0.w,
+              child: Container(
+            width: Dimensions.width, height: Dimensions.height*0.75,
             decoration: BoxDecoration(
               color: Color(kGreen.value),
               borderRadius: BorderRadius.only(
@@ -174,10 +211,10 @@ class _ConversationPageState extends State<ConversationPage> {
                 topLeft: Radius.circular(20.r)
               )
             ),
-            child: Stack(
-              children: [
-                Padding(padding: EdgeInsets.only(bottom: 6.h),
-                child: StreamBuilder(
+                child: Stack(
+                 children: [
+                   Padding(padding: EdgeInsets.only(bottom: 6.h),
+                    child: StreamBuilder(
                     stream: chats, builder: (context, snapshot){
                       if(snapshot.hasError){
                         return Text('Error: ${snapshot.error}');
@@ -187,12 +224,13 @@ class _ConversationPageState extends State<ConversationPage> {
                         return const SizedBox.shrink();
                       }
                       int msgCount = snapshot.data!.docs.length;
-                  return Column(
-                    children: [
+                     return Column(
+                     children: [
                       Container(
-                        height: height*0.64,
+                        height: Dimensions.height*0.64,
                         padding: EdgeInsets.all(8.h),
                         child: ScrollablePositionedList.builder(
+                          padding: EdgeInsets.only(bottom: (viewInsets.bottom > 0) ? Dimensions.height*0.29 : 0.h),
                           itemCount: msgCount,
                           initialScrollIndex: msgCount,
                           itemScrollController: itemController,
@@ -200,7 +238,7 @@ class _ConversationPageState extends State<ConversationPage> {
                             var message = snapshot.data!.docs[index];
                             Timestamp lastChatTime = message['time'];
                             DateTime chatTime = lastChatTime.toDate();
-                            print(message['id']);
+                            final isText = message['messageType'] == 'text';
 
                             return Padding(padding: EdgeInsets.all(8.w),
                             child: Column(
@@ -208,10 +246,28 @@ class _ConversationPageState extends State<ConversationPage> {
                                 Text(timeLineFormat(chatTime),
                                 style: appstyle(10.sp, Colors.grey, FontWeight.normal),),
 
-                                message['sender'] == userUid ?
-                                    chatRightItem(message['messageType'], message['message'], message['profile'])
-                                    : chatLeftItem(message['messageType'], message['message'], message['profile'])
-                              ],
+                                isText ?
+                                (message['sender'] == userUid ?
+                                chatRightItem(message['messageType'], message['message'],)
+                                    : chatLeftItem(message['messageType'], message['message'],))
+                                :(message['sender'] == userUid ?
+                            InkWell(
+                                child: chatRightItem(message['messageType'], message['message'],),
+                            onTap: () async{
+                              Uri url = Uri.parse(message['messageType']);
+                              final response = await client.get(url);
+                              final bytes = response.bodyBytes;
+                              PdfServices.storeFile(url, bytes);
+                            },)
+                                : InkWell(
+                                    child: chatLeftItem(message['messageType'], message['message'],),
+                                  onTap: () async{
+                                    Uri url = Uri.parse(message['messageType']);
+                                    final response = await client.get(url);
+                                    final bytes = response.bodyBytes;
+                                    PdfServices.storeFile(url, bytes);
+                                  },
+                                ))],
                             ),
                             );
                           },
@@ -221,13 +277,69 @@ class _ConversationPageState extends State<ConversationPage> {
                   );
                 }),
                 ),
-                Positioned(
-                    bottom: 0.h,
-                    child: MessagingField(
-                      sendText: (){
-                        sendMessage();
+                 Positioned(
+                     bottom: (viewInsets.bottom > 0) ? Dimensions.height*0.29 : 0.h,
+                    child: FutureBuilder(
+                      future: userProfile,
+                      builder: (context, snapshot) {
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                          return MessagingField(
+                              sendText: () {},
+                              messageController: messageController,
+                              messageFocusNode: messageFocusNode);
+                        } else if(snapshot.hasError){
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          profile = snapshot.data;
+                          String senderId = Provider.of<AgentNotifier>(context, listen: false).chat['sender'];
+                              return Consumer<AgentNotifier>(
+                                builder: (context, agentNotifier, child) {
+                                  return MessagingField(
+                                      onTap: () async{
+                                        String profileImg = profile!.profile;
+                                        final result = await FilePicker.platform.pickFiles(
+                                          type: FileType.custom,
+                                          allowedExtensions: ['pdf', 'doc',],
+                                          allowMultiple: false,
+                                        );
+                                        if (result != null) {
+                                          platformFile = result.files.first;
+                                          file = File(result.files.single.path!);
+
+                                          Reference ref = _storage.ref().child('pdf').child(userUid);
+                                          UploadTask uploadTask = ref.putFile(file!);
+                                          TaskSnapshot snapshot = await uploadTask;
+                                          var downloadUrl = await snapshot.ref.getDownloadURL();
+
+                                          var chat = agentNotifier.chat;
+
+                                          Map<String, dynamic> message = {
+                                            'message' : platformFile!.name,
+                                            'messageType': downloadUrl,
+                                            'profile':profileImg,
+                                            'sender':userUid,
+                                            'id':uuid.v4(),
+                                            'time':Timestamp.now()
+                                          };
+                                          services.createChat(chat['chatRoomId'], message);
+                                          await notificationServices.sendNotification(body: platformFile!.name, senderId: senderId
+                                          );
+                                        } else {}
+                                      },
+                                      sendText: () async{
+                                        String profileImg = profile!.profile;
+                                        sendMessage(profileImg);
+                                        await notificationServices.sendNotification(body: messageController.text,
+                                            senderId: senderId
+                                        );
+                                      },
+                                      messageController: messageController,
+                                      messageFocusNode: messageFocusNode);
+                                },
+                              );
+                        }
                       },
-                        messageController: messageController, messageFocusNode: messageFocusNode))
+                    ))
               ],
             ),
           ))

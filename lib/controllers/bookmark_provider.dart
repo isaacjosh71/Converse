@@ -13,26 +13,30 @@ class BookMarkNotifier extends ChangeNotifier {
   bool get bookmarked => _bookmarked;
 
   set isBookMarked(bool newState){
-    if(_bookmarked != newState){
+    // if(_bookmarked != newState){
       _bookmarked = newState;
       notifyListeners();
-    }
+    // }
   }
 
   String _bookmarkId = '';
   String get bookmarkId => _bookmarkId;
 
   set isBookMarkId(String newState){
-    if(_bookmarkId != newState){
+    // if(_bookmarkId != newState){
       _bookmarkId = newState;
       notifyListeners();
-    }
+    // }
   }
 
   addBookmark(String model) {
     BookMarkHelper.addBookMark(model).then((bookmark) {
-      isBookMarked = true;
-      isBookMarkId = bookmark.bookmarkId;
+      _bookmarked = bookmark.status;
+      _bookmarkId = bookmark.bookmarkId;
+      Get.snackbar('Bookmark successfully added', 'Visit bookmarks to see changes',
+          backgroundColor: Color(kOrange.value), colorText: Color(kLight.value),
+          icon: Icon(Icons.bookmark_add_outlined, color: Color(kLight.value),)
+      );
     });
   }
 
@@ -40,24 +44,26 @@ class BookMarkNotifier extends ChangeNotifier {
     var bookMark = BookMarkHelper.getBookMark(jobId);
       bookMark.then((value){
         if(value == null){
-          isBookMarked =  false;
-          isBookMarkId = '';
+          print(value);
+          _bookmarked =  false;
+          _bookmarkId = '';
         } else{
-          isBookMarked = true;
-          isBookMarkId = value.bookmarkId;
+          print(value);
+          _bookmarked = value.status;
+          _bookmarkId = value.bookmarkId;
         }
       });
     }
 
-    deleteBookMark(String jobId){
-    BookMarkHelper.deleteBookMark(jobId).then((bookmark){
-      if(bookmark){
+    deleteBookMark(String bookmarkId){
+    BookMarkHelper.deleteBookMark(bookmarkId).then((bookmark){
+      if(bookmark==true){
         Get.snackbar('Bookmark successfully deleted', 'Visit bookmarks to see changes',
         backgroundColor: Color(kOrange.value), colorText: Color(kLight.value),
           icon: Icon(Icons.bookmark_remove_outlined, color: Color(kLight.value),)
         );
       }
-      isBookMarked = false;
+      _bookmarked = false;
     });
     }
 

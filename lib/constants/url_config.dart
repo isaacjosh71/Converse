@@ -1,7 +1,9 @@
 class Config {
-  static const apiUrl = "jobhubvv2-production.up.railway.app";
+  // static const apiUrl = "jobhubserver-production-c355.up.railway.app";
+  static const apiUrl = "example-jobhub.onrender.com";
   static const String loginUrl = "/api/login";
   static const String signupUrl = "/api/register";
+  static const String passwordUrl = "/api/password";
   static const String jobs = "/api/jobs";
   static const String search = "/api/jobs/search";
   static const String profileUrl = "/api/users";

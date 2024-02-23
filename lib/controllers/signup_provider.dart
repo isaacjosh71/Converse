@@ -6,6 +6,8 @@ import 'package:jobhub/services/helpers/auth_helper.dart';
 import 'package:jobhub/views/ui/auth/login.dart';
 import 'package:jobhub/views/ui/home/mainscreen.dart';
 
+import '../services/notification_services.dart';
+
 
 
 class SignUpNotifier extends ChangeNotifier {
@@ -58,17 +60,21 @@ class SignUpNotifier extends ChangeNotifier {
   //   return regex.hasMatch(password);
   // }
 
+  static final notifications = NotificationServices();
+
   signUp(String model, ZoomNotifier zoomNotifier){
     AuthHelper.signup(model).then((response){
       if(response==true){
         loader=false;
         zoomNotifier.currentIndex = 0;
-        Get.offAll(()=> const LoginPage());
+        Get.offAll(()=> const MainScreen());
+        notifications.requestPermission();
+        notifications.getToken();
       } else{
         loader=false;
         Get.snackbar('Failed to sign up', 'Please check credentials',
-        backgroundColor: Color(kDarkPurple.value),
-          colorText: Color(kLight.value), icon: Icon(Icons.add_alert)
+        backgroundColor: Color(kOrange.value),
+          colorText: Color(kLight.value), icon: const Icon(Icons.add_alert)
         );
       }
     });

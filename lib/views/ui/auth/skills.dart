@@ -9,6 +9,7 @@ import 'package:jobhub/services/helpers/auth_helper.dart';
 import 'package:jobhub/views/common/exports.dart';
 import 'package:jobhub/views/ui/auth/add_skill.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../models/response/skills/skills.dart';
 
@@ -36,7 +37,6 @@ class _SkillsWidgetState extends State<SkillsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var zoomNotifier = Provider.of<ZoomNotifier>(context);
     var skillNotifier = Provider.of<SkillNotifier>(context);
     return Column(
       children: [
@@ -44,7 +44,7 @@ class _SkillsWidgetState extends State<SkillsWidget> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ReusableText(text: 'Skills', style: appstyle(15.sp, Color(kDark.value), FontWeight.w600)),
+              ReusableText(text: 'Brief Description - Portfolio', style: appstyle(15.sp, Color(kDark.value), FontWeight.w500)),
               Consumer<SkillNotifier>(builder: (context, skillNotifier, child){
                 return skillNotifier.addSkills == false ? GestureDetector(
                   onTap: (){
@@ -58,7 +58,7 @@ class _SkillsWidgetState extends State<SkillsWidget> {
                     skillNotifier.setSkills = !skillNotifier.addSkills;
                     //false then true then false then true....
                   },
-                  child: Icon(AntDesign.closecircleo, size: 21.sp,),
+                  child: Icon(AntDesign.closecircleo, size: 18.sp,),
                 );
               })
             ],
@@ -75,19 +75,25 @@ class _SkillsWidgetState extends State<SkillsWidget> {
           skillNotifier.setSkills = !skillNotifier.addSkills;
           userSkills = getSkills();
         },
-        ) : SizedBox(
-          height: 35.h,
+        )
+            :
+        SizedBox(
+          height: 130.h,
           child: FutureBuilder(future: userSkills, builder: (context, snapshot){
             if(snapshot.connectionState == ConnectionState.waiting){
-              return const Center(
-                  child: CircularProgressIndicator.adaptive());
-            } else{
-              var skills = snapshot.data;
+              return const SizedBox.shrink();
+            } else if(snapshot.hasError){
+              return Text('Error: ${snapshot.error}');
+            }
+            else{
+              var skills = snapshot.data!;
               return ListView.builder(
-                  itemCount: skills!.length,
+                  itemCount: skills.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index){
                     var skill = skills[index];
+                    mySkills = skill.skill;
+                    print('skills profile${skill.skill}');
                 return GestureDetector(
                     onLongPress: (){
                       skillNotifier.setSkillsId = skill.id;
@@ -96,16 +102,24 @@ class _SkillsWidgetState extends State<SkillsWidget> {
                       skillNotifier.setSkillsId = '';
                     },
                     child: Container(
+                      height:  skillNotifier.addSkillsId == skill.id ? 130.h :100.h,
+                      width: Dimensions.width,
                       padding: EdgeInsets.all(5.w),
                       margin: EdgeInsets.all(4.w),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15.r)),
+                        borderRadius: BorderRadius.all(Radius.circular(10.r)),
                         color: Color(kLightGrey.value)
                       ),
-                      child: Row(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ReusableText(text: skill.skill, style: appstyle(10.sp, Color(kDark.value), FontWeight.w500)),
-                          SizedBox(width: 5.w,),
+                          Text(skill.skill,
+                            textAlign: TextAlign.start,
+                            maxLines: 7,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 14.sp, color: Color(kDark.value), fontWeight: FontWeight.normal),
+                          ),
                           skillNotifier.addSkillsId == skill.id ?
                               GestureDetector(
                                 onTap: (){

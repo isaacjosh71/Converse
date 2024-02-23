@@ -17,6 +17,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../controllers/skills_provider.dart';
+import '../../../models/response/auth/profile_model.dart';
+import '../../../services/helpers/auth_helper.dart';
 import '../../common/custom_outline_btn.dart';
 import '../../common/reusable_text.dart';
 
@@ -32,15 +34,38 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
   TextEditingController company = TextEditingController(text: jobUpdate!.company);
   TextEditingController location = TextEditingController(text: jobUpdate!.location);
   TextEditingController salary = TextEditingController(text: jobUpdate!.salary);
+  TextEditingController level = TextEditingController(text: jobUpdate!.level);
   TextEditingController contract = TextEditingController(text: jobUpdate!.contract);
   TextEditingController description = TextEditingController(text: jobUpdate!.description);
   TextEditingController period = TextEditingController(text: jobUpdate!.period);
-  TextEditingController rq1 = TextEditingController(text: jobUpdate!.requirements[1]);
-  TextEditingController rq2 = TextEditingController(text: jobUpdate!.requirements[2]);
-  TextEditingController rq3 = TextEditingController(text: jobUpdate!.requirements[3]);
-  TextEditingController rq4 = TextEditingController(text: jobUpdate!.requirements[4]);
-  TextEditingController rq5 = TextEditingController(text: jobUpdate!.requirements[5]);
+  TextEditingController rq1 = TextEditingController(text: jobUpdate!.requirements[0]);
+  TextEditingController rq2 = TextEditingController(text: jobUpdate!.requirements[1]);
+  TextEditingController rq3 = TextEditingController(text: jobUpdate!.requirements[2]);
+  TextEditingController rq4 = TextEditingController(text: jobUpdate!.requirements[3]);
+  TextEditingController rq5 = TextEditingController(text: jobUpdate!.requirements[4]);
   TextEditingController imageController = TextEditingController(text: jobUpdate!.imageUrl);
+
+  String username = '';
+  // String profile = '';
+  late Future<ProfileRes> userProfile;
+  ProfileRes? profile;
+
+  @override
+  void initState(){
+    super.initState();
+    getProfile();
+    getName();
+  }
+
+  getName() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    username = prefs.getString('username')??'';
+    // profile = prefs.getString('profile')??'';
+  }
+
+  getProfile(){
+    userProfile = AuthHelper.getProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +84,7 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
               ],
               text: 'Upload Jobs',
               color: Color(kNewBlue.value),
-              child: const BackBtn())),
+              child: BackBtn(color: Color(kLight.value),))),
       body: Stack(
         children: [
           Positioned(
@@ -75,9 +100,8 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
                           horizontal: 12.w, vertical: 20.h),
                       child: ListView(
                         children: [
-                          SizedBox(height: 20.h,),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
                                 onSubmitted: (value){
                                   if(value!.isEmpty){
@@ -87,7 +111,7 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
                                 controller: title, hintText: 'Job Title'),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
                                 onSubmitted: (value){
                                   if(value!.isEmpty){
@@ -97,7 +121,17 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
                                 controller: company, hintText: 'Company'),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
+                            child: buildTextField(
+                                onSubmitted: (value){
+                                  if(value!.isEmpty){
+                                    return ('Please fill the void');
+                                  } else {return null;}
+                                }, label: const Text('Level'),
+                                controller: level, hintText: 'Level'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
                                 onSubmitted: (value){
                                   if(value!.isEmpty){
@@ -107,7 +141,7 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
                                 controller: location, hintText: 'Location'),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
                                 onSubmitted: (value){
                                   if(value!.isEmpty){
@@ -117,7 +151,7 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
                                 controller: contract, hintText: 'Contract'),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
                                 onSubmitted: (value){
                                   if(value!.isEmpty){
@@ -127,21 +161,20 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
                                 controller: salary, hintText: 'Salary'),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
-                                height: 100.h,
                                 onSubmitted: (value){
                                   if(value!.isEmpty){
                                     return ('Please fill the void');
                                   } else {return null;}
-                                }, label: const Text('Salary Period'), maxLines: 3,
+                                }, label: const Text('Salary Period'),
                                 controller: period, hintText: 'Annual | Monthly | Weekly'),
                           ),
                           Consumer<SkillNotifier>(builder: (context, skillNotifier, child){
-                            return SizedBox(width: width, height: 60.h,
+                            return SizedBox(width: Dimensions.width, height: 60.h,
                               child: Row(
                                 children: [
-                                  SizedBox(width: width*0.8, height: 60.h,
+                                  SizedBox(width: Dimensions.width*0.8, height: 60.h,
                                     child: buildTextField(
                                         onChanged: (value){
                                           skillNotifier.setLogoUrl(imageController.text);
@@ -153,6 +186,7 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
                                         }, label: const Text('ImageUrl'),
                                         controller: imageController, hintText: 'Image Url'),
                                   ),
+                                  SizedBox(width: 3.w,),
                                   GestureDetector(
                                     onTap: (){
                                       skillNotifier.setLogoUrl(imageController.text);
@@ -162,23 +196,21 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
                               ),
                             );
                           }),
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
-                            child: buildTextField(
-                                height: 100.h,
-                                onSubmitted: (value){
-                                  if(value!.isEmpty){
-                                    return ('Please fill the void');
-                                  } else {return null;}
-                                }, label: const Text('Description'), maxLines: 3,
-                                controller: description, hintText: 'Description'),
-                          ),
+                          SizedBox(height: 5.h,),
+                          buildTextField(
+                              height: 100.h,
+                              onSubmitted: (value){
+                                if(value!.isEmpty){
+                                  return ('Please fill the void');
+                                } else {return null;}
+                              }, label: const Text('Description'), maxLines: 3,
+                              controller: description, hintText: 'Description'),
                           ReusableText(text: 'Requirements', style: appstyle(15.sp, Color(kDark.value), FontWeight.w600),),
-                          SizedBox(height: 10.h,),
+                          SizedBox(height: 5.h,),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
-                                maxLines: 2, height: 80.h,
+                                maxLines: 2, height: 50.h,
                                 onSubmitted: (value){
                                   if(value!.isEmpty){
                                     return ('Please fill the field');
@@ -187,9 +219,9 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
                                 controller: rq1, hintText: 'Requirements'),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
-                                maxLines: 2, height: 80.h,
+                                maxLines: 2, height: 50.h,
                                 onSubmitted: (value){
                                   if(value!.isEmpty){
                                     return ('Please fill the field');
@@ -198,45 +230,59 @@ class _AgentUpdateJobState extends State<AgentUpdateJob> {
                                 controller: rq2, hintText: 'Requirements'),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
-                                maxLines: 2, height: 80.h,
+                                maxLines: 2, height: 50.h,
                                 label: const Text('Requirements'),
                                 controller: rq3, hintText: 'Requirements'),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
-                                maxLines: 2, height: 80.h,
+                                maxLines: 2, height: 50.h,
                                 label: const Text('Requirements'),
                                 controller: rq4, hintText: 'Requirements'),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 5.h),
                             child: buildTextField(
-                                maxLines: 2, height: 80.h,
+                                maxLines: 2, height: 50.h,
                                 label: const Text('Requirements'),
                                 controller: rq5, hintText: 'Requirements'),
                           ),
-                          CustomOutlineBtn(text: 'Submit',
-                            onTap: () async{
-                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                              String agentName = prefs.getString('userName')??'';
-                              CreateJobsRequest rawModel = CreateJobsRequest(
-                                  title: title.text, location: location.text,
-                                  company: company.text, hiring: jobUpdate!.hiring,
-                                  description: description.text, salary: salary.text,
-                                  period: period.text, contract: contract.text,
-                                  imageUrl: skillNotifier.logoUrl, agentId: jobUpdate!.agentId,
-                                  requirements: [
-                                    rq1.text, rq2.text, rq3.text, rq4.text, rq5.text,
-                                  ], agentName: agentName);
-                              var model = createJobsRequestToJson(rawModel);
-                              JobsHelper.updateJob(model,jobUpdate!.id);
-                              zoomNotifier.currentIndex = 0;
-                              Get.to(()=> const MainScreen());
-                            },
-                            color: Color(kOrange.value), width: width, height: 40.h,)
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.w),
+                            child: FutureBuilder(
+                              future: userProfile,
+                              builder: (context, snapshot) {
+                                if(snapshot.connectionState == ConnectionState.waiting){
+                                  return const SizedBox.shrink();
+                                } else if(snapshot.hasError){
+                                  return Text('Error: ${snapshot.error}');
+                                }else{
+                                  profile = snapshot.data;
+                                  return CustomOutlineBtn(text: 'Submit',
+                                      onTap: () async{
+                                        CreateJobsRequest rawModel = CreateJobsRequest(
+                                            title: title.text, location: location.text,
+                                            company: company.text, hiring: jobUpdate!.hiring,
+                                            description: description.text, salary: salary.text,
+                                            period: period.text, contract: contract.text,
+                                            imageUrl: skillNotifier.logoUrl, agentId: jobUpdate!.agentId,
+                                            requirements: [
+                                              rq1.text, rq2.text, rq3.text, rq4.text, rq5.text,
+                                            ], agentName: username, level: level.text, agentPic: profile!.profile);
+                                        var model = createJobsRequestToJson(rawModel);
+                                        JobsHelper.updateJob(model,jobUpdate!.id);
+                                        zoomNotifier.currentIndex = 0;
+                                        Get.offAll(()=> const MainScreen());
+                                      },
+                                      height: 40.h, color: Color(kLight.value), color2: Color(kOrange.value));
+                                }
+
+                              },
+                            ),
+                          )
                         ],
                       ),
                     )

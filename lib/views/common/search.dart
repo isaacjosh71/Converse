@@ -21,7 +21,7 @@ class SearchWidget extends StatelessWidget {
           child: Row(
             children: [
               SizedBox(
-                width: width*0.84,
+                width: Dimensions.width*0.84,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [

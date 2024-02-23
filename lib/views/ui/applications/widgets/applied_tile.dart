@@ -19,49 +19,60 @@ class AppliedTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  FittedBox(
-      child: GestureDetector(
-        onTap: (){
-          Get.to(()=> JobPage(title: job.title, id: job.id, agentName: job.agentName));
-        },
-        child: Padding(padding: EdgeInsets.only(bottom: 8.h),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.r, vertical: 10.r),
-            height: height*0.1, width: width,
-            decoration: BoxDecoration(
-                color: const Color(0x09000000),
-                borderRadius: BorderRadius.all(Radius.circular(9.r))
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 30.r,
-                          backgroundImage: NetworkImage(job.imageUrl),
-                        ),
-                        SizedBox(width: 10.w,),
-                        Column(
-                          children: [
-                            ReusableText(text: job.title, style: appstyle(16.sp, Color(kDark.value), FontWeight.w500)),
-                            SizedBox(width: width*0.5,
-                                child: ReusableText(text: job.title, style: appstyle(12.sp, Color(kDarkGrey.value), FontWeight.w500))),
-                            ReusableText(text: '${job.salary} per ${job.period}', style: appstyle(12.sp, Color(kDark.value), FontWeight.w500)),
-                          ],
-                        ),
-                        CustomOutlineBtn(
+      child: Padding(padding: EdgeInsets.only(bottom: 8.h),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10.r, vertical: 10.r),
+          height: Dimensions.height*0.11, width: Dimensions.width,
+          decoration: BoxDecoration(
+              color: const Color(0x09000000),
+              borderRadius: BorderRadius.all(Radius.circular(9.r))
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 25.r,
+                        backgroundImage: NetworkImage(job.imageUrl),
+                      ),
+                      SizedBox(width: 10.w,),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ReusableText(text: job.company, style: appstyle(16.sp, Color(kDark.value), FontWeight.w500)),
+                          SizedBox(height: 5.h,),
+                          SizedBox(width: Dimensions.width*0.5,
+                              child: ReusableText(text: job.title, style: appstyle(14.sp, Color(kDarkGrey.value), FontWeight.w500))),
+                          SizedBox(height: 5.h,),
+                          Row(
+                            children: [
+                              ReusableText(text: '${job.salary} ', style: appstyle(12.sp, Color(kDark.value), FontWeight.w500)),
+                              ReusableText(text: 'per ${job.period}', style: appstyle(12.sp, Color(kDark.value), FontWeight.w500)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      GestureDetector(
+                        onTap: (){
+                          Get.to(()=> JobPage(title: job.title, id: job.id, agentName: job.agentName, agentPic:job.agentPic,));
+                        },
+                        child: CustomOutlineBtn(
                             width: 90.w, height: 36.h,
-                            text: 'View', color: Color(kLightBlue.value))
-                      ],
-                    ),
-                  ],
-                )
-              ],
-            ),
+                            text: 'View', color: Color(kLightBlue.value),
+                          onTap: (){},
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              )
+            ],
           ),
         ),
       ),

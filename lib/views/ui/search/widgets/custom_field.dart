@@ -25,7 +25,7 @@ class CustomField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width, height: 45.h,
+      width: Dimensions.width, height: 45.h,
       padding: EdgeInsets.only(bottom: 5.h),
       color: Color(kLightGrey.value),
       child: Row(
@@ -41,17 +41,17 @@ class CustomField extends StatelessWidget {
               ),
               Container(
                 padding: EdgeInsets.only(top: 20.h),
-                width: width*0.65,
+                width: Dimensions.width*0.65,
                 child: TextFormField(
                   decoration: InputDecoration(
                       hintText: 'Search job',
                       // suffixIcon: ,
-                      hintStyle: appstyle(14.sp, Color(kDarkGrey.value), FontWeight.w500),
+                      hintStyle: appstyle(14.sp, Color(kDarkGrey.value), FontWeight.normal),
                       errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
                           borderSide: BorderSide(color: Colors.red, width: 0.5.w)
                       ),
-                      focusedBorder: OutlineInputBorder(
+                      focusedBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
                           borderSide: BorderSide(color: Colors.transparent, width: 0)
                       ),

@@ -1,10 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:jobhub/controllers/exports.dart';
 import 'package:jobhub/views/ui/home/mainscreen.dart';
-import 'package:jobhub/views/ui/onboarding/onboarding_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:jobhub/views/ui/onboarding/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'controllers/agent_provider.dart';
@@ -12,7 +14,13 @@ import 'controllers/skills_provider.dart';
 import 'views/common/exports.dart';
 import 'services/firebase_options.dart';
 
-Widget defaultHome = const OnBoardingScreen();
+Widget defaultHome = const Splash();
+
+Future<void> _backgroundMessageHandler(RemoteMessage message)async{
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,11 +28,16 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  String? token = '';
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  final entryPoint = prefs.getBool('entrypoint') ?? false;
-  if(entryPoint==true){
+  token = prefs.getString('token');
+  if(token != null){
     defaultHome = const MainScreen();
   }
+
+  await FirebaseMessaging.instance.getInitialMessage();
+  
+  FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
  
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => OnBoardNotifier()),
@@ -33,7 +46,6 @@ void main() async {
     ChangeNotifierProvider(create: (context) => SignUpNotifier()),
     ChangeNotifierProvider(create: (context) => JobsNotifier()),
     ChangeNotifierProvider(create: (context) => BookMarkNotifier()),
-    ChangeNotifierProvider(create: (context) => ImageUploader()),
     ChangeNotifierProvider(create: (context) => ProfileNotifier()),
     ChangeNotifierProvider(create: (context) => SkillNotifier()),
     ChangeNotifierProvider(create: (context) => AgentNotifier()),
@@ -49,16 +61,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return ScreenUtilInit(
         useInheritedMediaQuery: true,
-        designSize: const Size(375, 812),
+        designSize: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height),
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) {
           return GetMaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'JobHub',
+            title: 'Converse',
             theme: ThemeData(
               scaffoldBackgroundColor: Color(kLight.value),
               iconTheme: IconThemeData(color: Color(kDark.value)),

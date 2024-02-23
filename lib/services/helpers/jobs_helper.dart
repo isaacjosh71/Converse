@@ -1,8 +1,17 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as https;
 import 'package:jobhub/models/response/jobs/get_job.dart';
 import 'package:jobhub/models/response/jobs/jobs_response.dart';
 import 'package:jobhub/constants/url_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jobhub/controllers/zoom_provider.dart';
+
+import '../../constants/app_constants.dart';
+import '../../views/ui/home/mainscreen.dart';
 
 class JobsHelper {
   static var client = https.Client();
@@ -120,6 +129,23 @@ class JobsHelper {
     } catch(e){
       return false;
     }
+  }
+
+  static Future<bool> deleteJob(String jobId) async{
+    try{
+    Map<String, String> requestHeaders = {
+      'Content-Type':'application/json'
+    };
+    var url = Uri.https(Config.apiUrl, "${Config.jobs}/$jobId");
+    print(url);
+
+    var response = await client.delete(url, headers: requestHeaders);
+    if(response.statusCode == 200){
+      return true;
+    } else {return false;}
+  } catch(e){
+  return false;
+  }
   }
 
 }

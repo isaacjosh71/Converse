@@ -3,10 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:get/get.dart';
 import 'package:jobhub/controllers/exports.dart';
-import 'package:jobhub/controllers/login_provider.dart';
 import 'package:jobhub/models/request/auth/login_model.dart';
 import 'package:jobhub/views/common/app_bar.dart';
-import 'package:jobhub/views/common/backBtn.dart';
 import 'package:jobhub/views/common/custom_btn.dart';
 import 'package:jobhub/views/common/custom_textfield.dart';
 import 'package:jobhub/views/common/exports.dart';
@@ -38,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
     return Consumer<LoginNotifier>(builder: (context,loginNotifier,child){
       loginNotifier.getPref();
       return Scaffold(
+        backgroundColor: Color(kLight.value),
         appBar: PreferredSize(preferredSize: Size.fromHeight(50.h),
             child: CustomAppBar(
               text: 'Login',

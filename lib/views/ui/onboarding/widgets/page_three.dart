@@ -15,15 +15,15 @@ class PageThree extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        height: height,
-        width: width,
+        height: Dimensions.height,
+        width: Dimensions.width,
         color: Color(kLightBlue.value),
         child: Column(
           children: [
             Image.asset('assets/images/page3.png'),
             SizedBox(height: 20.h,),
-            ReusableText(text: 'Welcome To JobHub',
-                style: appstyle(30, Color(kLight.value), FontWeight.w500)),
+            ReusableText(text: 'Welcome To Converse',
+                style: appstyle(25.sp, Color(kLight.value), FontWeight.w500)),
             SizedBox(height: 20.h,),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.w),
@@ -32,15 +32,15 @@ class PageThree extends StatelessWidget {
                 style: appstyle(14, Color(kLight.value), FontWeight.normal),),
             ),
             SizedBox(height: 20.h,),
-            CustomOutlineBtn(text: 'Continue as applicant',
+            CustomOutlineBtn(text: 'Get Started',
               color: Color(kLight.value),
-              height: height*0.05, width: width*0.7,
+              height: Dimensions.height*0.05, width: Dimensions.width*0.7,
               onTap: () async {
                 final SharedPreferences prefs = await SharedPreferences.getInstance();
                 prefs.setBool('entryPoint', true);
               Get.to(()=> const MainScreen());
               },
-            )
+            ),
           ],
         ),
       ),

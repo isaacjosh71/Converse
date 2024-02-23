@@ -17,7 +17,6 @@ dependencies:
   provider: ^6.0.5
   http: ^0.13.5
   flutter_vector_icons: ^2.0.0
-  google_fonts: ^4.0.3
   smooth_page_indicator: ^1.1.0
   shared_preferences: ^2.1.0
   cached_network_image: ^3.3.0
@@ -26,19 +25,36 @@ dependencies:
   flutter_zoom_drawer: ^3.0.4+1
   flutter_chat_bubble: ^2.0.2
   flutter_animate: ^4.1.1+1
-  image_cropper: ^3.0.3
   image_picker: ^0.8.7+4
   firebase_core: ^2.24.0
   intl: ^0.18.1
   scrollable_positioned_list: ^0.3.8
-  uuid: ^4.2.1
+  uuid: ^3.0.5
   cloud_firestore: ^4.14.0
+  shimmer: ^3.0.0
+  firebase_storage: ^11.6.0
+  file_picker: ^6.1.1
+  flutterfire_cli: ^0.2.7
+  flutter_local_notifications: ^16.3.2
+  firebase_messaging: ^14.7.0
+  flutter_pdfview: ^1.2.7
+  syncfusion_flutter_pdfviewer: ^20.4.54
+  path: ^1.8.3
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.12.0
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: "AppIcon"
+  image_path: "assets/images/Converse_logo.jpg"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -48,7 +64,6 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - assets/json/
 
   fonts:
     - family: Inter

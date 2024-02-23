@@ -14,15 +14,16 @@ class AddSkills extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(2.h),
-      height: 60.h,
+      height: 100.h,
       child: buildTextField(
-        controller: skill, hintText: 'Add new skill',
+        controller: skill, hintText: 'Add portfolio',
+      maxLines: 5,
       suffixIcon: GestureDetector(
         onTap: onTap,
         child: Icon(Entypo.upload_to_cloud, size: 30.sp, color: Color(kNewBlue.value),),
       ),
         onSubmitted: (p0){
-          if(p0!.isEmpty){return 'Please enter skill name';}
+          if(p0!.isEmpty){return 'Please fill in';}
           else{return null;}
         },
       ),

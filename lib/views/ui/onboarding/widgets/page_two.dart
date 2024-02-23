@@ -12,8 +12,8 @@ class PageTwo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        height: height,
-        width: width,
+        height: Dimensions.height,
+        width: Dimensions.width,
         color: Color(kDarkBlue.value),
         child: Column(
           children: [
@@ -25,9 +25,9 @@ class PageTwo extends StatelessWidget {
             SizedBox(height: 20.h,),
             Column(
               children: [
-                Text('Stable Yourself \n With Your Abilities',
+                Text('Get Stabled With\nYour Abilities',
                     textAlign: TextAlign.center,
-                    style: appstyle(30, Color(kLight.value), FontWeight.w500)),
+                    style: appstyle(25.sp, Color(kLight.value), FontWeight.w500)),
                 SizedBox(height: 15.h,),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.w),

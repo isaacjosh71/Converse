@@ -9,8 +9,8 @@ class PageOne extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        height: height,
-        width: width,
+        height: Dimensions.height,
+        width: Dimensions.width,
         color: Color(kDarkPurple.value),
         child: Column(
           children: [
@@ -20,7 +20,7 @@ class PageOne extends StatelessWidget {
             Column(
               children: [
                 ReusableText(text: 'Find Your Dream Job',
-                    style: appstyle(30, Color(kLight.value), FontWeight.w500)),
+                    style: appstyle(25.sp, Color(kLight.value), FontWeight.w500)),
                 SizedBox(height: 15.h,),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.w),

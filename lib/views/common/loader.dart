@@ -12,8 +12,8 @@ class Loader extends StatelessWidget {
     child: Column(
       children: [
         Image.asset('assets/images/optimized_search.png'),
-        SizedBox(height: 20.h,),
-        ReusableText(text: text, style: appstyle(18.sp, Color(kDark.value), FontWeight.w600))
+        SizedBox(height: 30.h,),
+        ReusableText(text: text, style: appstyle(18.sp, Color(kDark.value), FontWeight.w500))
       ],
     ),
     );
